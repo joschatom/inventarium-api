@@ -4,11 +4,9 @@ using InventariumAPI.Models;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace InventariumAPI.DTOs.Object;
+namespace InventariumAPI.DTOs.Category;
 
-public class UpdateObjectDTO: ObjectDTO
+public class UpdateCategoryDTO: CategoryDTO
 {
-
-    public new string? Name { get; set; } = null;
-    public new string? Description { get; set; } = null;
+    public new string? Name { get; set; }
 }

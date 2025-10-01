@@ -1,14 +1,17 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration.Annotations;
+using InventariumAPI.Data;
 using InventariumAPI.Interfaces;
 using InventariumAPI.Models;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
 
 namespace InventariumAPI.DTOs.Object;
 
+
 #nullable disable
-public class ObjectDTO : IBaseDTO<Models.ObjectEntry, int>, IDtoTypes
+public class ObjectDTO: IBaseDTO<Models.ObjectEntry, int>, IDtoTypes
 {
     public static Type CreateDTO => typeof(CreateObjectDTO);
     public static Type UpdateDTO => typeof(UpdateObjectDTO);
@@ -18,7 +21,6 @@ public class ObjectDTO : IBaseDTO<Models.ObjectEntry, int>, IDtoTypes
     public string Name { get; set; }
     public string Description { get; set; }
 
-    [ValueConverter(typeof(StringToEnumConverter<ObjectState>))]
-    public string State { get; set; }
+    public int LocationId { get; set; }
+    public int CategoryId { get; set; }
 }
-

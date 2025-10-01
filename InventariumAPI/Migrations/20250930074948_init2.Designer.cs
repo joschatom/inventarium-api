@@ -4,6 +4,7 @@ using InventariumAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InventariumAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250930074948_init2")]
+    partial class init2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,9 +57,6 @@ namespace InventariumAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("ObjectId", "UserId");
-
-                    b.HasIndex("ObjectId")
-                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -149,8 +149,8 @@ namespace InventariumAPI.Migrations
             modelBuilder.Entity("InventariumAPI.Models.Lendout", b =>
                 {
                     b.HasOne("InventariumAPI.Models.ObjectEntry", "Object")
-                        .WithOne()
-                        .HasForeignKey("InventariumAPI.Models.Lendout", "ObjectId")
+                        .WithMany()
+                        .HasForeignKey("ObjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -187,7 +187,7 @@ namespace InventariumAPI.Migrations
             modelBuilder.Entity("InventariumAPI.Models.ObjectManager", b =>
                 {
                     b.HasOne("InventariumAPI.Models.ObjectEntry", "Object")
-                        .WithMany("Managers")
+                        .WithMany()
                         .HasForeignKey("ObjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -211,11 +211,6 @@ namespace InventariumAPI.Migrations
             modelBuilder.Entity("InventariumAPI.Models.Location", b =>
                 {
                     b.Navigation("Objects");
-                });
-
-            modelBuilder.Entity("InventariumAPI.Models.ObjectEntry", b =>
-                {
-                    b.Navigation("Managers");
                 });
 
             modelBuilder.Entity("InventariumAPI.Models.User", b =>

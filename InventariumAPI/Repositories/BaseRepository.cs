@@ -1,6 +1,9 @@
 ﻿using InventariumAPI.Data;
 using InventariumAPI.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace InventariumAPI.Repositories;
 

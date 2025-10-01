@@ -4,11 +4,9 @@ using InventariumAPI.Models;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace InventariumAPI.DTOs.Object;
+namespace InventariumAPI.DTOs.Location;
 
-public class UpdateObjectDTO: ObjectDTO
+public class UpdateLocationDTO : LocationDTO
 {
-
-    public new string? Name { get; set; } = null;
-    public new string? Description { get; set; } = null;
+    public new string? Name { get; set; }
 }
