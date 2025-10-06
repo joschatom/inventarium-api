@@ -44,6 +44,8 @@ public abstract class BaseController
     [HttpPost]
     public async Task<TId> Create(TCreateDTO data)
     {
+        
+
         var mapped = _mapper.Map<TModel>(data);
 
         TModel entry = await _repository.CreateAsync(mapped);
@@ -58,10 +60,9 @@ public abstract class BaseController
     [HttpPut("{id}")]
     public async Task Update(TId id, [FromBody] TUpdateDTO update)
     {
-
         var entity = await _repository.GetAsync(id)
             ?? throw new KeyNotFoundException($"The {typeof(TModel).Name} with the ID {id} doesn't exist.");
-
+        
         entity = _mapper.Map(update, entity);
 
         await _repository.UpdateAsync(entity);

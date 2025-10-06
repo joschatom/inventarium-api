@@ -1,13 +1,11 @@
 ﻿using AutoMapper.Configuration.Annotations;
+using InventariumAPI.Interfaces;
 using InventariumAPI.Models;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace InventariumAPI.DTOs.User;
 
-public class CreateUserDTO: UserDTO
+public class CreateUserDTO: IBaseDTO<Models.User, TModelId>
 {
-    public new required string Name { get; set; }
-    [SwaggerIgnore]
-    [Ignore]
-    public new string? Role { get; set; } = nameof(UserRole.Customer);
+    public required string Name { get; set; }
 }

@@ -8,10 +8,12 @@ public class UserRepository(DataContext _context)
     : BaseRepository<Models.User, TModelId>(_context)
     , IUserRepository
 {
-    public async Task Demote(TModelId id)
+    public async Task<UserRole?> Demote(TModelId id)
     {
-        var user = await base.GetAsync(id)
-            ?? throw new KeyNotFoundException($"User with ID {id} doesn' exists.");
+        var user = await base.GetAsync(id);
+         
+        if (user == null)
+            return null;
 
         user.Role = user.Role switch
         {
@@ -20,20 +22,26 @@ public class UserRepository(DataContext _context)
         };
         await base.UpdateAsync(user);
         await base.SaveChangesAsync();
+
+        return user.Role;
     }
 
-    public async Task<IEnumerable<Lendout>> GetLendouts(TModelId id)
+    public async Task<IEnumerable<Lendout>?> GetLendouts(TModelId id)
     {
-        var user = await base.GetAsync(id)
-            ?? throw new KeyNotFoundException($"User with ID {id} doesn' exists.");
+        var user = await base.GetAsync(id);
 
+        if (user == null) 
+            return null;
+           
         return user.Lendouts.AsEnumerable();
     }
 
-    public async Task Promote(TModelId id)
+    public async Task<UserRole?> Promote(TModelId id)
     {
-        var user = await base.GetAsync(id)
-            ?? throw new KeyNotFoundException($"User with ID {id} doesn' exists.");
+        var user = await base.GetAsync(id);
+
+        if (user == null)
+            return null;
 
         user.Role = user.Role switch
         {
@@ -42,5 +50,7 @@ public class UserRepository(DataContext _context)
         };
         await base.UpdateAsync(user);
         await base.SaveChangesAsync();
+
+        return user.Role;
     }
 }

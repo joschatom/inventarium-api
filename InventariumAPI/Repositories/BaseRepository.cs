@@ -4,14 +4,23 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 
 namespace InventariumAPI.Repositories;
 
-public abstract class BaseRepository<TModel, TId>(DataContext context) : IBaseRepository<TModel, TId>
+public abstract class BaseRepository<TModel, TId> : IBaseRepository<TModel, TId>
     where TModel : class, IGenericModel<TId>
     where TId : notnull
 {
-    private readonly DbSet<TModel> _dbSet = context.Set<TModel>();
+    protected BaseRepository(DataContext context)
+    {
+        _context = context;
+        _dbSet = context.Set<TModel>();
+    }
+
+    private readonly DbSet<TModel> _dbSet;
+    private readonly DataContext _context;
+
 
     public async Task<TModel> CreateAsync(TModel model)
         => (await _dbSet.AddAsync(model)).Entity;
@@ -21,16 +30,18 @@ public abstract class BaseRepository<TModel, TId>(DataContext context) : IBaseRe
             ?? throw new KeyNotFoundException($"The {typeof(TModel).Name} with the ID {id} doesn't exist.")));
 
     public async Task<bool> DoesExistAsync(TId id)
-        => (await _dbSet.FindAsync(id)) is not null;
+        => (await _dbSet.FindAsync(TModel.DeconstructId(id))) is not null;
 
     public async Task<IEnumerable<TModel>> GetAllAsync()
-        => await _dbSet.ToListAsync();
+    {
+        return await _dbSet.ToListAsync(); 
+    }
 
     public async Task<TModel?> GetAsync(TId id)
-        => await _dbSet.FindAsync(id);
+        => await _dbSet.FindAsync(TModel.DeconstructId(id));
 
     public async Task SaveChangesAsync()
-        => await context.SaveChangesAsync();
+        => await _context.SaveChangesAsync();
 
     public Task<TModel> UpdateAsync(TModel model)
         => Task.Run(() => _dbSet.Update(model).Entity);

@@ -23,6 +23,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             .HasKey(k => new { k.ObjectId, k.UserId });
 
         modelBuilder.Entity<ObjectEntry>()
+
             .HasOne<Location>(k => k.Location)
             .WithMany(k => k.Objects)
             .IsRequired();
@@ -32,13 +33,25 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             .WithMany(k => k.Objects)
             .IsRequired();
 
+        var eager = modelBuilder.Model.GetEntityTypes()
+            .SelectMany(e => e.GetDeclaredNavigations()
+                .Where(n => !n.IsCollection)
+                .Select(n => (n.DeclaringEntityType, n.Name)));
+
+        foreach ((var ty, var name) in eager)
+        {
+            modelBuilder.Entity(ty.Name)
+                .Navigation(name)
+                .AutoInclude();
+        }
+
         modelBuilder.Entity<ObjectEntry>()
             .HasMany(k => k.Managers)
             .WithOne(k => k.Object)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<ObjectEntry>()
-            .HasOne<Lendout>()
+            .HasOne(o => o.Lendout)
             .WithOne(l => l.Object)
             .OnDelete(DeleteBehavior.Cascade);
 
@@ -47,10 +60,13 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             .WithOne(l => l.User)
             .OnDelete(DeleteBehavior.Cascade);
 
+      
+        
 
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         base.OnModelCreating(modelBuilder);
+
     }
 
 }

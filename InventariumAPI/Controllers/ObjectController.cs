@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using InventariumAPI.Data;
+using InventariumAPI.DTOs.Lendout;
+using InventariumAPI.DTOs.User;
 using InventariumAPI.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,5 +19,19 @@ namespace InventariumAPI.Controllers
             DTOs.Object.UpdateObjectDTO>
         (_repository, _mapper, _context)
     {
+        private readonly IObjectRepository repository = _repository;
+        private readonly IMapper mapper = _mapper;
+
+        [HttpGet("{id}/managers")]
+        public async Task<IEnumerable<UserDTO>> GetManagers(TModelId id)
+            => mapper.Map<IEnumerable<UserDTO>>(
+                await repository.GetManagers(id)
+                ?? throw new KeyNotFoundException($"Object with ID {id} doesn't exists."));
+
+        [HttpGet("{id}/lendout")]
+        public async Task<LendoutDTO> GetCurrentLendout(TModelId id)
+            => mapper.Map<LendoutDTO>(
+                await repository.GetLendout(id)
+                ?? throw new KeyNotFoundException($"Lendout for object with ID {id} doesn't exists."));
     }
 }

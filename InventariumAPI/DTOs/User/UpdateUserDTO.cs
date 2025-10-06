@@ -1,15 +1,13 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration.Annotations;
+using InventariumAPI.Interfaces;
 using InventariumAPI.Models;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace InventariumAPI.DTOs.User;
 
-public class UpdateUserDTO: UserDTO
+public class UpdateUserDTO: IBaseDTO<Models.User, TModelId>
 {
-    public new string? Name { get; set; }
-    [SwaggerIgnore]
-    [Ignore]
-    public new string? Role { get; set; }
+    public string? Name { get; set; }
 }

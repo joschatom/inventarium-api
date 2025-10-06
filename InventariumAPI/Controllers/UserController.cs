@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using InventariumAPI.Data;
+using InventariumAPI.DTOs.Lendout;
 using InventariumAPI.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ namespace InventariumAPI.Controllers
 {
     [Route("api/user")]
     [ApiController]
-    public class UserController(IUserRepository _repository,  IMapper _mapper, DataContext _context) 
+    public class UserController(IUserRepository _repository, IMapper _mapper, DataContext _context)
         : BaseController<Models.User, TModelId,
             DTOs.User.UserDTO,
             DTOs.User.CreateUserDTO,
@@ -17,6 +18,8 @@ namespace InventariumAPI.Controllers
         (_repository, _mapper, _context)
     {
         private readonly IUserRepository repository = _repository;
+        private readonly IMapper mapper = _mapper;
+
 
         [HttpGet("{id}/promote")]
         public async Task Promote(TModelId id)
@@ -25,7 +28,5 @@ namespace InventariumAPI.Controllers
         [HttpGet("{id}/demote")]
         public async Task Demote(TModelId id)
             => await repository.Demote(id);
-
     }       
-
 }

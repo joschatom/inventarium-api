@@ -20,7 +20,7 @@ public class MapperProfile: Profile
         MapDtoTypes<DTOs.Object.ObjectDTO>();
         MapDtoTypes<DTOs.Location.LocationDTO>();
         MapDtoTypes<DTOs.User.UserDTO>();
-
+        MapDtoTypes<DTOs.Lendout.LendoutDTO>();
    
     }
 

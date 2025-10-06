@@ -5,6 +5,7 @@ using AutoMapper.Configuration.Annotations;
 using InventariumAPI.Interfaces;
 using InventariumAPI.Models;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.SqlServer.Server;
 using System.ComponentModel.DataAnnotations;
 
 namespace InventariumAPI.DTOs.User;
@@ -17,6 +18,6 @@ public class UserDTO : IBaseDTO<Models.User, int>, IDtoTypes
 
     public string Name { get; set; }
     [ValueConverter(typeof(StringToEnumConverter<UserRole>))]
-    public string Role { get; set; }
+    public string Role { get; set; } = nameof(UserRole.Customer);
 }
 

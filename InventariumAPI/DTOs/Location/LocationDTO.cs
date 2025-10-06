@@ -4,12 +4,11 @@ using AutoMapper;
 using AutoMapper.Configuration.Annotations;
 using InventariumAPI.Interfaces;
 using InventariumAPI.Models;
-using InventariumAPI.Shared;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.ComponentModel.DataAnnotations;
 
 namespace InventariumAPI.DTOs.Location;
-public class LocationDTO : DtoWithContext, IBaseDTO<Models.Location, int>, IDtoTypes
+public class LocationDTO : IBaseDTO<Models.Location, int>, IDtoTypes
 {
     public static Type CreateDTO => typeof(CreateLocationDTO);
     public static Type UpdateDTO => typeof(UpdateLocationDTO);

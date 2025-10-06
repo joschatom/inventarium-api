@@ -34,6 +34,13 @@ public class ObjectEntry: IGenericModel<TModelId>
     public virtual Category Category { get; set; } = null!;
 
     public virtual ICollection<ObjectManager> Managers { get; set; } = [];
+    public Lendout? Lendout { get; set; }
+
+    public ObjectState State =>
+        Lendout is null
+            ? ObjectState.Free
+            : ObjectState.Lendout;
+
 
     public int GetId() => ObjectId;
 }
