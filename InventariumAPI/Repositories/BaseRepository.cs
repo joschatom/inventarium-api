@@ -30,14 +30,14 @@ public abstract class BaseRepository<TModel, TId> : IBaseRepository<TModel, TId>
             ?? throw new KeyNotFoundException($"The {typeof(TModel).Name} with the ID {id} doesn't exist.")));
 
     public async Task<bool> DoesExistAsync(TId id)
-        => (await _dbSet.FindAsync(TModel.DeconstructId(id))) is not null;
+        => (await GetAsync(id)) is not null;
 
     public async Task<IEnumerable<TModel>> GetAllAsync()
     {
         return await _dbSet.ToListAsync(); 
     }
 
-    public async Task<TModel?> GetAsync(TId id)
+    public virtual async Task<TModel?> GetAsync(TId id)
         => await _dbSet.FindAsync(TModel.DeconstructId(id));
 
     public async Task SaveChangesAsync()

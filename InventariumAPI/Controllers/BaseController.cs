@@ -68,9 +68,8 @@ public abstract class BaseController
         await _repository.UpdateAsync(entity);
 
         await _repository.SaveChangesAsync();
+
+        
     }
-
-  
-
 }
 

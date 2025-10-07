@@ -15,7 +15,7 @@ public class ObjectRepository(DataContext _context)
             .Where(l => l.ObjectId == id)
             .Where(l => l.StartDate <= DateTime.UtcNow 
                 && (l.EndDate == null 
-                | DateTime.UtcNow < (l.EndDate)
+                || DateTime.UtcNow < (l.EndDate)
                 )
             )
             .FirstOrDefaultAsync();

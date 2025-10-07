@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.Configuration.Annotations;
 using InventariumAPI.DTOs.Lendout;
 using InventariumAPI.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -44,13 +45,18 @@ public class UserLendoutController
         TModelId objectId,
         [FromForm] TimeSpan? duration)
     {
-        var obj = await objectRepository.GetAsync(objectId);
+
+        if (!await userRepository.DoesExistAsync(userId))
+            throw new KeyNotFoundException($"User with ID {userId} doesn't exist.");
+
+        var obj = await objectRepository.GetAsync(objectId)
+            ?? throw new KeyNotFoundException($"Object with ID {userId} doesn't exist.");
+
         var lendout = await objectRepository.GetLendout(objectId);
 
         var startDate = DateTime.UtcNow.AlignToMinutes();
         var endDate = duration is not null
             ? startDate + duration : null;
-
 
         if (lendout != null)
         {
@@ -64,6 +70,8 @@ public class UserLendoutController
                     ? $"until {lendout.EndDate?.ToShortDateString()}."
                     : "indefinitly."));
         }
+
+        await repository.DeleteOldEntries();
 
         lendout = new Models.Lendout()
         {
@@ -81,5 +89,18 @@ public class UserLendoutController
         await repository.SaveChangesAsync();
 
         return mapper.Map<LendoutDTO>(lendout);
+    }
+
+    [HttpDelete("{objectId}")]
+    public async Task ReturnObject(TModelId userId, TModelId objectId)
+    {
+        if (!await userRepository.DoesExistAsync(userId))
+            throw new KeyNotFoundException($"User with ID {userId} doesn't exist.");
+
+        if (!await objectRepository.DoesExistAsync(objectId))
+            throw new KeyNotFoundException($"Object with ID {objectId} doesn't exist.");
+
+        await repository.DeleteAsync((objectId, userId));
+        await repository.SaveChangesAsync();
     }
 }

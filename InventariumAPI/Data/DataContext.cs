@@ -60,9 +60,6 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             .WithOne(l => l.User)
             .OnDelete(DeleteBehavior.Cascade);
 
-      
-        
-
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         base.OnModelCreating(modelBuilder);
