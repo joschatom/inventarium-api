@@ -10,7 +10,6 @@ using System.Data;
 
 namespace InventariumAPI.DTOs.Lendout;
 
-[CustomValidation(typeof(LendoutDTO), nameof(LendoutDTO.ValidateCreate))]
 public class CreateLendoutDTO: IBaseDTO<Models.Lendout, (TModelId, TModelId)>
 {
     [Ignore] private DateTime m_StartDate = default;

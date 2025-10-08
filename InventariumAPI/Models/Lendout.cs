@@ -18,6 +18,7 @@ public class Lendout: IGenericModel<(TModelId ObjectId, TModelId UserId)>
     public virtual ObjectEntry Object { get; set; } = null!;
     public virtual User User { get; set; } = null!;
     public DateTime StartDate { get; set; }
+
     public DateTime? EndDate { get; set; }
     public (TModelId, TModelId) GetId() => (ObjectId, UserId);
 

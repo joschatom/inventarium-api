@@ -21,16 +21,11 @@ public class LendoutDTO : IBaseDTO<Models.Lendout, (TModelId, TModelId)>, IDtoTy
 
     public TModelId UserId { get; set; }
     public TModelId ObjectId { get; set; }
+
     public DateTime StartDate { get; set; }
     public DateTime? EndDate { get; set; }
 
 
-    public static ValidationResult ValidateCreate(CreateLendoutDTO dto)
-    {
-   
-
-        return ValidationResult.Success;
-    }
 }
 
 static class DateTimeExt

@@ -2,11 +2,13 @@
 using AutoMapper;
 using InventariumAPI.Data;
 using InventariumAPI.Interfaces;
+using InventariumAPI.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 
@@ -18,34 +20,32 @@ public abstract class BaseController
     : ControllerBase
     where TId : notnull
     where TModel : class, IGenericModel<TId>
-    where TDto : class, IBaseDTO<TModel, TId>, new()
+    where TDto : class, IBaseDTO<TModel, TId>, IDtoTypes, new()
     where TCreateDTO : class, IBaseDTO<TModel, TId>
     where TUpdateDTO : class, IBaseDTO<TModel, TId>
 {
 
     [HttpGet]
-    public async Task<Dictionary<TId, TDto>> GetAll()
+    public async Task<FallibleResponse<Dictionary<TId, TDto>>> GetAll()
     {
         TDto dto = new();
 
         var entries = await _repository.GetAllAsync();
 
-        return entries.ToDictionary(
+        return new(entries.ToDictionary(
             x => x.GetId(),
             x => _mapper.Map<TDto>(x)
-        );
+        ));
     }
 
     [HttpGet("{id}")]
-    public async Task<TDto> GetById(TId id)
-        => _mapper.Map<TDto>(await _repository.GetAsync(id)
-            ?? throw new KeyNotFoundException($"The {typeof(TModel).Name} with the ID {id} doesn't exist."));
+    public async Task<FallibleResponse<TDto>> GetById(TId id)
+        => new(_mapper.Map<TDto>(await _repository.GetAsync(id)
+            ?? throw new KeyNotFoundException($"The {typeof(TModel).Name} with the ID {id} doesn't exist.")));
 
     [HttpPost]
-    public async Task<TId> Create(TCreateDTO data)
+    public async Task<FallibleResponse<TId>> Create(TCreateDTO data )
     {
-        
-
         var mapped = _mapper.Map<TModel>(data);
 
         TModel entry = await _repository.CreateAsync(mapped);
@@ -54,11 +54,12 @@ public abstract class BaseController
 
         await _repository.SaveChangesAsync();
 
-        return entry.GetId();
+
+        return new(entry.GetId());
     }
 
     [HttpPut("{id}")]
-    public async Task Update(TId id, [FromBody] TUpdateDTO update)
+    public async Task<FallibleResponse<TDto>> Update(TId id, [FromBody] TUpdateDTO update)
     {
         var entity = await _repository.GetAsync(id)
             ?? throw new KeyNotFoundException($"The {typeof(TModel).Name} with the ID {id} doesn't exist.");
@@ -69,7 +70,7 @@ public abstract class BaseController
 
         await _repository.SaveChangesAsync();
 
-        
+        return new(_mapper.Map<TDto>(entity));
     }
 }
 

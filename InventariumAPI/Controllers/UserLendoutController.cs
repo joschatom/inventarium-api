@@ -2,6 +2,7 @@
 using AutoMapper.Configuration.Annotations;
 using InventariumAPI.DTOs.Lendout;
 using InventariumAPI.Interfaces;
+using InventariumAPI.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using System.Runtime.Remoting;
@@ -21,13 +22,13 @@ public class UserLendoutController
 {
 
     [HttpGet]
-    public async Task<IEnumerable<LendoutDTO>> GetAllLendouts([FromRoute] TModelId userId)
-        => mapper.Map<IEnumerable<LendoutDTO>>((await repository.GetAllAsync())
+    public async Task<FallibleResponse<IEnumerable<LendoutDTO>>> GetAllLendouts([FromRoute] TModelId userId)
+        => new(mapper.Map<IEnumerable<LendoutDTO>>((await repository.GetAllAsync())
             .Where(l => l.UserId == userId)
-            .ToList());
+            .ToList()));
 
     [HttpGet("{objectId}")]
-    public async Task<LendoutDTO> GetLendout(TModelId userId, TModelId objectId)
+    public async Task<FallibleResponse<LendoutDTO>> GetLendout(TModelId userId, TModelId objectId)
     {
         Console.WriteLine(objectId);
         Console.WriteLine(userId);
@@ -40,7 +41,7 @@ public class UserLendoutController
     }
 
     [HttpPost("{objectId}")]
-    public async Task<LendoutDTO> CreateLendout(
+    public async Task<FallibleResponse<LendoutDTO>> CreateLendout(
         TModelId userId,
         TModelId objectId,
         [FromForm] TimeSpan? duration)

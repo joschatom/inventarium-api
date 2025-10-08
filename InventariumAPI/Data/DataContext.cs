@@ -13,6 +13,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
     public DbSet<Models.User> Users { get; set; }
     public DbSet<Models.Lendout> Lendouts { get; set; }
     public DbSet<Models.ObjectManager> ObjectManagers { get; set; }
+    public DbSet<Models.BrokenObject> BrokenObjects { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,8 +24,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             .HasKey(k => new { k.ObjectId, k.UserId });
 
         modelBuilder.Entity<ObjectEntry>()
-
-            .HasOne<Location>(k => k.Location)
+            .HasOne(k => k.Location)
             .WithMany(k => k.Objects)
             .IsRequired();
 
@@ -32,6 +32,10 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             .HasOne(k => k.Category)
             .WithMany(k => k.Objects)
             .IsRequired();
+
+        modelBuilder.Entity<BrokenObject>()
+            .HasOne(k => k.Object)
+            .WithOne();
 
         var eager = modelBuilder.Model.GetEntityTypes()
             .SelectMany(e => e.GetDeclaredNavigations()

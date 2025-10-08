@@ -5,6 +5,7 @@ using AutoMapper;
 using InventariumAPI;
 using InventariumAPI.Data;
 using InventariumAPI.Interfaces;
+using InventariumAPI.Middleware;
 using InventariumAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -37,7 +38,7 @@ builder.Services.AddDbContext<DataContext>(options => {
 
 
 var app = builder.Build();
-
+app.UseErrorHandling();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
