@@ -1,4 +1,5 @@
 ﻿using AutoMapper.Configuration.Annotations;
+using Bogus;
 using InventariumAPI.Data;
 using InventariumAPI.DTOs.Object;
 using InventariumAPI.Interfaces;
@@ -18,7 +19,7 @@ public enum ObjectState
     Broken
 }
 
-public class ObjectEntry: IGenericModel<TModelId>
+public class ObjectEntry: IGenericModel<TModelId>, IFakerFactory<ObjectEntry>
 {
     [Key]
     public TModelId ObjectId { get; set; }
@@ -31,9 +32,12 @@ public class ObjectEntry: IGenericModel<TModelId>
     [MinLength(1)]
     public string Description { get; set; } = "N/A";
 
+    [DeniedValues(0)]
     public TModelId LocationId { get; set; }
 
     public virtual Location Location { get; set; } = null!;
+
+    [DeniedValues(0)]
 
     public TModelId CategoryId { get; set; }
 
@@ -41,12 +45,22 @@ public class ObjectEntry: IGenericModel<TModelId>
 
     public virtual ICollection<ObjectManager> Managers { get; set; } = [];
     public Lendout? Lendout { get; set; }
+    public BrokenObject? BrokenObject { get; set; }
 
     public ObjectState State =>
-        Lendout is null
-            ? ObjectState.Free
-            : ObjectState.Lendout;
+        Lendout is not null ? ObjectState.Lendout
+        : BrokenObject is not null
+            ? ObjectState.Broken
+            : ObjectState.Free;
 
+    public static Faker<ObjectEntry> CreateFaker(DataContext context)
+        => new Faker<ObjectEntry>()
+            .RuleFor(p => p.Name, g => g.Commerce.ProductName())
+            .RuleFor(p => p.Description, g => g.Commerce.ProductDescription())
+            .RuleFor(p => p.CategoryId, g => g.PickRandom(context.Categories.AsEnumerable()).CategoryId)
+            .RuleFor(p => p.LocationId, g => g.PickRandom(context.Locations.AsEnumerable()).LocationId);
 
     public int GetId() => ObjectId;
+
+    public override string ToString() => $"object named '{Name}'(ID {GetId()})";
 }

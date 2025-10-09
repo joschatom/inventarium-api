@@ -34,9 +34,11 @@ public class MapperProfile: Profile
             .ReverseMap();
         CreateMap(T.UpdateDTO, T.BaseType)
             .ForAllMembers(m => {
+                m.UseDestinationValue();
+                m.DoNotAllowNull();
+
                 m.Condition(
                     (source, destination, sourceMember) => sourceMember is not null);
-                    
                 }
 
             );

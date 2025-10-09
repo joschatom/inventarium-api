@@ -1,5 +1,6 @@
 ﻿using InventariumAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Security.AccessControl;
 
@@ -17,6 +18,8 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+
         modelBuilder.Entity<Lendout>()
             .HasKey(k => new { k.ObjectId, k.UserId });
            
@@ -42,12 +45,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
                 .Where(n => !n.IsCollection)
                 .Select(n => (n.DeclaringEntityType, n.Name)));
 
-        foreach ((var ty, var name) in eager)
-        {
-            modelBuilder.Entity(ty.Name)
-                .Navigation(name)
-                .AutoInclude();
-        }
+
 
         modelBuilder.Entity<ObjectEntry>()
             .HasMany(k => k.Managers)
@@ -65,6 +63,8 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        
 
         base.OnModelCreating(modelBuilder);
 

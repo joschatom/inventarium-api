@@ -7,7 +7,7 @@
         public Task<TModel?> GetAsync(TId id);
         public Task<TModel> CreateAsync(TModel model);
         public Task<TModel> UpdateAsync(TModel model);
-        public Task DeleteAsync(TId id);
+        public Task DeleteAsync(TModel model);
 
         public Task SaveChangesAsync();
     }

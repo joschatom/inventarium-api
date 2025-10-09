@@ -9,10 +9,10 @@ namespace InventariumAPI.Models;
 public class ObjectManager: IGenericModel<(TModelId, TModelId)>
 {
     public TModelId ObjectId { get; set; }
-    public required virtual ObjectEntry Object { get; set; }
+    public virtual ObjectEntry Object { get; set; } = null!;
 
     public TModelId UserId { get; set; }
-    public required virtual User User { get; set; }
+    public virtual User User { get; set; } = null!;
 
     public (TModelId, TModelId) GetId() => (ObjectId, UserId);
 }

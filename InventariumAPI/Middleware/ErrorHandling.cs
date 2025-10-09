@@ -17,12 +17,12 @@ using System.Text.Json.Serialization;
 
 namespace InventariumAPI.Middleware;
 
-
+public class FallibleResponse: FallibleResponse<object>;
 public class FallibleResponse<T>
 {
     public bool Success { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public T? Data { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -31,7 +31,7 @@ public class FallibleResponse<T>
     public string? Detail { get; set; }
     [DefaultValue(200)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public int StatusCode { get; set; } = 200;
+    public int StatusCode { get; set; } = 0;
 
     public async Task WriteAsResponse(HttpContext context)
     {
@@ -111,4 +111,9 @@ public class ErrorHandling(RequestDelegate next, ILogger<ErrorHandling> logger)
         }
     }
 
+    
+
 }
+
+
+

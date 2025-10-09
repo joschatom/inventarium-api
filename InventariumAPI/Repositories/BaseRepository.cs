@@ -25,20 +25,27 @@ public abstract class BaseRepository<TModel, TId> : IBaseRepository<TModel, TId>
     public async Task<TModel> CreateAsync(TModel model)
         => (await _dbSet.AddAsync(model)).Entity;
 
-    public Task DeleteAsync(TId id)
-        => Task.Run(async () => _dbSet.Remove(await GetAsync(id)
-            ?? throw new KeyNotFoundException($"The {typeof(TModel).Name} with the ID {id} doesn't exist.")));
+    public Task DeleteAsync(TModel model)
+        => Task.Run(() => _dbSet.Remove(model));
 
     public async Task<bool> DoesExistAsync(TId id)
         => (await GetAsync(id)) is not null;
 
     public async Task<IEnumerable<TModel>> GetAllAsync()
-    {
-        return await _dbSet.ToListAsync(); 
-    }
+        => await _dbSet
+            .IncludeAll(_dbSet.EntityType.Model, n => !n.IsCollection)
+            .ToListAsync();
 
     public virtual async Task<TModel?> GetAsync(TId id)
-        => await _dbSet.FindAsync(TModel.DeconstructId(id));
+    {
+        var entry = await _dbSet
+            .FindAsync(id);
+
+        return await _dbSet
+            .Where(e => e == entry)
+            .IncludeAll(_dbSet.EntityType.Model, n => !n.IsCollection)
+            .SingleOrDefaultAsync();
+    }
 
     public async Task SaveChangesAsync()
         => await _context.SaveChangesAsync();

@@ -8,4 +8,6 @@ public interface IObjectRepository: IBaseRepository<Models.ObjectEntry, TModelId
     public Task<Models.Lendout?> GetLendout(TModelId id);
     public ValueTask<BrokenObject?> AsBrokenAsync(TModelId id);
     public Task<bool?> SetBrokenAsync(TModelId id, string? reason);
+    public Task RemoveManager(TModelId id, TModelId userId);
+    public Task AddManager(TModelId id, TModelId userId);
 }

@@ -30,12 +30,19 @@ public class UserLendoutController
     [HttpGet("{objectId}")]
     public async Task<FallibleResponse<LendoutDTO>> GetLendout(TModelId userId, TModelId objectId)
     {
+        var user = await userRepository.GetAsync(userId)
+            ?? throw new KeyNotFoundException($"User with ID {userId} doesn't exist.");
+
+        var obj = await objectRepository.GetAsync(objectId)
+            ?? throw new KeyNotFoundException($"Object with ID {objectId} doesn't exist.");
+
+
         Console.WriteLine(objectId);
         Console.WriteLine(userId);
 
         var lendout = await repository.GetAsync((objectId, userId))
             ?? throw new 
-                KeyNotFoundException($"Lendout for object with ID {objectId} by user with ID {userId} doesn't exist.");
+                KeyNotFoundException($"Lendout for {obj} by {user} doesn't exist.");
 
         return mapper.Map<LendoutDTO>(lendout);
     }
@@ -65,8 +72,8 @@ public class UserLendoutController
                 ?? throw new Exception("Lender is not a real user.");
 
             throw new
-                InvalidOperationException($"The object '{obj?.Name}'(ID {obj?.ObjectId}) "
-                + $"is already lent out to user {lender.Name}(ID {lender.UserId}) "
+                InvalidOperationException($"The {obj} "
+                + $"is already lent out to {lender} "
                 + (lendout.EndDate.HasValue
                     ? $"until {lendout.EndDate?.ToShortDateString()}."
                     : "indefinitly."));
@@ -95,13 +102,19 @@ public class UserLendoutController
     [HttpDelete("{objectId}")]
     public async Task ReturnObject(TModelId userId, TModelId objectId)
     {
-        if (!await userRepository.DoesExistAsync(userId))
-            throw new KeyNotFoundException($"User with ID {userId} doesn't exist.");
+        var user = await userRepository.GetAsync(userId)
+            ?? throw new KeyNotFoundException($"User with ID {userId} doesn't exist.");
 
-        if (!await objectRepository.DoesExistAsync(objectId))
-            throw new KeyNotFoundException($"Object with ID {objectId} doesn't exist.");
+        var obj = await objectRepository.GetAsync(objectId)
+            ?? throw new KeyNotFoundException($"Object with ID {objectId} doesn't exist.");
 
-        await repository.DeleteAsync((objectId, userId));
+        var lendout = await repository.GetAsync((objectId, userId))
+            ?? throw new InvalidOperationException(
+                $"The {obj} is not lent out to {user}."
+            );
+
+
+        await repository.DeleteAsync(lendout);
         await repository.SaveChangesAsync();
     }
 }
