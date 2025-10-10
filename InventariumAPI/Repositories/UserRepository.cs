@@ -21,8 +21,6 @@ public class UserRepository(DataContext _context)
     {
         var user = await base.GetAsync(id);
 
-       
-
         if (user == null)
             return null;
 

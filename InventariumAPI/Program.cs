@@ -1,17 +1,10 @@
 global using TModelId = int;
-
-
-using AutoMapper;
 using InventariumAPI;
 using InventariumAPI.Data;
 using InventariumAPI.Interfaces;
 using InventariumAPI.Middleware;
 using InventariumAPI.Repositories;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using System.Diagnostics;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,15 +22,14 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ILendoutsRepository, LendoutsRepository>();
 if (builder.Environment.IsDevelopment())
     builder.Services.AddScoped<IDebugRepository, DebugRepository>();
-if (builder.Environment.IsDevelopment())
-    builder.Services.AddScoped<DebugControl>();
 
-    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-    builder.Services.AddEndpointsApiExplorer();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => c.EnableAnnotations());
 
 // Add services to the container.
-builder.Services.AddDbContext<DataContext>(options => {
+builder.Services.AddDbContext<DataContext>(options =>
+{
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 

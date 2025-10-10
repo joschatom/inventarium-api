@@ -25,7 +25,7 @@ public class User: IGenericModel<TModelId>, IFakerFactory<User>
             .RuleFor(p => p.Role, g => UserRole.Customer);
 
     public TModelId GetId() => UserId;
-
+    
     public override string ToString() => $"user named '{Name}'(ID {GetId()})";
 }
 
@@ -33,7 +33,4 @@ public enum UserRole
 {
     Customer, 
     Manager
-
-
-
 }

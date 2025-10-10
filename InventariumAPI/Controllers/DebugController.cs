@@ -13,6 +13,7 @@ using System.Text;
 
 namespace InventariumAPI.Controllers;
 
+#if DEBUG
 [ApiController]
 [Route("/api/debug")]
 public class DebugController(IDebugRepository repository,
@@ -23,7 +24,11 @@ public class DebugController(IDebugRepository repository,
     IHostEnvironment environment) 
     : ControllerBase
 {
-    private readonly Random rng = new Random();
+    private Random rng = new();
+
+    [HttpPatch("seed")]
+    public void Seed([FromQuery] int seed)
+        => rng = new(seed);
 
     [HttpGet("wipeall")]
     public async Task<IActionResult> WipeAll()
@@ -168,3 +173,4 @@ public class DebugController(IDebugRepository repository,
         return Ok(new());
     }
 }
+#endif

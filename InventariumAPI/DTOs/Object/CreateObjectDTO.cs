@@ -12,11 +12,9 @@ namespace InventariumAPI.DTOs.Object;
 
 public class CreateObjectDTO: ObjectDTO
 {
-    [DefaultValue("free")]
-    [AllowedValues(
-        ["free", "broken"],
-        ErrorMessage = "Creating an object with a state other than free or broken is not allowed.")]
-    public new string State { get; set; } = "free";
+    [SwaggerIgnore]
+    [AllowedValues([null], ErrorMessage = "Cannot set state of object directly.")]
+    public new string? State { get; set; } = null;
 
     [DeniedValues([null])]
     [MinLength(3)]

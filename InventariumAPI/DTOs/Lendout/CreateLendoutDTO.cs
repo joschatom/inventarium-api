@@ -16,12 +16,12 @@ public class CreateLendoutDTO: IBaseDTO<Models.Lendout, (TModelId, TModelId)>
     [Ignore] private DateTime? m_EndDate = default;
 
     public required DateTime StartDate {
-        get => m_StartDate.AlignToMinutes();
+        get => m_StartDate;
         set => m_StartDate = value;
     }
     public DateTime? EndDate
     {
-        get => m_EndDate?.AlignToMinutes();
+        get => m_EndDate;
         set => m_EndDate = value;
     }
 }

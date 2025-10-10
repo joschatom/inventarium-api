@@ -22,17 +22,16 @@ public class ObjectRepository(DataContext _context)
     public async Task<Lendout?> GetLendout(TModelId id)
         => await context.Lendouts
             .IgnoreAutoIncludes()
+            .Where(l => l.ObjectId == id)
             .Include(l => l.User)
             .Include(l => l.Object)
-            .Where(l => l.ObjectId == id)
-            .Where(l => l.StartDate <= DateTime.UtcNow 
-                && (l.EndDate == null 
-                || DateTime.UtcNow < (l.EndDate)
+            .Where(l => l.StartDate < DateTime.UtcNow
+                && (l.EndDate != null || (DateTime.UtcNow < (l.EndDate))
                 )
             )
             .FirstOrDefaultAsync();
         
-    public async Task<IEnumerable<User>?> GetManagers(TModelId id)
+    public async Task<IEnumerable<User>> GetManagersOrDefault(TModelId id)
         => await context.ObjectManagers
             .IgnoreAutoIncludes()
             .Include(l => l.User)
@@ -40,6 +39,10 @@ public class ObjectRepository(DataContext _context)
             .Where(m => m.ObjectId == id)
             .ToListAsync()
             .ContinueWith(l => l.Result.Select(m => m.User));
+
+    public async Task<bool> HasManagers(TModelId id, TModelId userId)
+    => await context.ObjectManagers
+        .ContainsAsync(new() { UserId = userId, ObjectId = id });
 
     public async Task RemoveManager(int id, int userId)
         => await context.ObjectManagers

@@ -9,6 +9,7 @@ public class LendoutsRepository(DataContext _context):
     BaseRepository<Models.Lendout, (TModelId objectId, TModelId userId)>
     (_context), ILendoutsRepository
 {
+
     public override async Task<Lendout?> GetAsync((int objectId, int userId) id)
     {
         await DeleteOldEntries();

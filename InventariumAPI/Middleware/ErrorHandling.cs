@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection.Emit;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -22,7 +23,6 @@ public class FallibleResponse<T>
 {
     public bool Success { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public T? Data { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -62,7 +62,7 @@ public class FallibleResponse<T>
 
     }
 
-    public FallibleResponse(T data)
+    public FallibleResponse(T? data)
     {
         Success = true;
         Data = data;
@@ -89,7 +89,7 @@ public class FallibleResponse<T>
         Success = true;
     }
 
-    public static implicit operator FallibleResponse<T>(T response)
+    public static implicit operator FallibleResponse<T>(T? response)
         => new(response);
 
 }

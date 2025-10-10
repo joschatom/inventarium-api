@@ -9,28 +9,25 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices;
 
-namespace InventariumAPI.Controllers
+namespace InventariumAPI.Controllers;
+
+[Route("api/user")]
+[ApiController]
+public class UserController(IUserRepository _repository, IMapper _mapper)
+    : BaseController<Models.User, TModelId,
+        DTOs.User.UserDTO,
+        DTOs.User.CreateUserDTO,
+        DTOs.User.UpdateUserDTO>
+    (_repository, _mapper)
 {
-    [Route("api/user")]
-    [ApiController]
-    public class UserController(IUserRepository _repository, IMapper _mapper, DataContext _context)
-        : BaseController<Models.User, TModelId,
-            DTOs.User.UserDTO,
-            DTOs.User.CreateUserDTO,
-            DTOs.User.UpdateUserDTO>
-        (_repository, _mapper, _context)
-    {
-        private readonly IUserRepository repository = _repository;
-        private readonly IMapper mapper = _mapper;
-        [HttpGet("{id}/promote")]
-        public async Task Promote(TModelId id)
-        {
+    private readonly IUserRepository repository = _repository;
+    private readonly IMapper mapper = _mapper;
+    [HttpGet("{id}/promote")]
+    public async Task Promote(TModelId id)
+        => await repository.Promote(id);
+   
 
-            await repository.Promote(id);
-        }
-
-        [HttpGet("{id}/demote")]
-        public async Task Demote(TModelId id)
-            => await repository.Demote(id);
-    }       
-}
+    [HttpGet("{id}/demote")]
+    public async Task Demote(TModelId id)
+        => await repository.Demote(id);
+}       

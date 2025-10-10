@@ -20,12 +20,17 @@ public class UserLendoutController
     IMapper mapper)
     : ControllerBase
 {
-
     [HttpGet]
-    public async Task<FallibleResponse<IEnumerable<LendoutDTO>>> GetAllLendouts([FromRoute] TModelId userId)
-        => new(mapper.Map<IEnumerable<LendoutDTO>>((await repository.GetAllAsync())
-            .Where(l => l.UserId == userId)
-            .ToList()));
+    public async Task<FallibleResponse<LendoutDTO[]>> GetAllLendouts(TModelId userId)
+    {
+        if (!await userRepository.DoesExistAsync(userId))
+            throw new KeyNotFoundException($"User with ID {userId} doesn't exist.");
+
+        var lendouts = (await repository.GetAllAsync())
+            .Where(l => l.UserId == userId);
+
+        return mapper.Map<LendoutDTO[]>(lendouts);
+    }
 
     [HttpGet("{objectId}")]
     public async Task<FallibleResponse<LendoutDTO>> GetLendout(TModelId userId, TModelId objectId)
@@ -35,10 +40,6 @@ public class UserLendoutController
 
         var obj = await objectRepository.GetAsync(objectId)
             ?? throw new KeyNotFoundException($"Object with ID {objectId} doesn't exist.");
-
-
-        Console.WriteLine(objectId);
-        Console.WriteLine(userId);
 
         var lendout = await repository.GetAsync((objectId, userId))
             ?? throw new 
@@ -62,9 +63,9 @@ public class UserLendoutController
 
         var lendout = await objectRepository.GetLendout(objectId);
 
-        var startDate = DateTime.UtcNow.AlignToMinutes();
+        var startDate = DateTime.UtcNow;
         var endDate = duration is not null
-            ? startDate + duration : null;
+            ? (startDate + duration) : null;
 
         if (lendout != null)
         {
@@ -112,7 +113,6 @@ public class UserLendoutController
             ?? throw new InvalidOperationException(
                 $"The {obj} is not lent out to {user}."
             );
-
 
         await repository.DeleteAsync(lendout);
         await repository.SaveChangesAsync();

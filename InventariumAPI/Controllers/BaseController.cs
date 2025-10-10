@@ -1,24 +1,14 @@
 ﻿
 using AutoMapper;
-using InventariumAPI.Data;
 using InventariumAPI.Interfaces;
 using InventariumAPI.Middleware;
-using InventariumAPI.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Swashbuckle.AspNetCore.Annotations;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 
 namespace InventariumAPI.Controllers;
 
 public abstract class BaseController
     <TModel, TId, TDto, TCreateDTO, TUpdateDTO>
-    (IBaseRepository<TModel, TId> _repository, IMapper _mapper, DataContext _context)
+    (IBaseRepository<TModel, TId> _repository, IMapper _mapper)
     : ControllerBase
     where TId : notnull
     where TModel : class, IGenericModel<TId>
@@ -26,7 +16,6 @@ public abstract class BaseController
     where TCreateDTO : class, IBaseDTO<TModel, TId>
     where TUpdateDTO : class, IBaseDTO<TModel, TId>
 {
-
     [HttpGet]
     public async Task<FallibleResponse<Dictionary<TId, TDto>>> GetAll()
     {
@@ -66,7 +55,7 @@ public abstract class BaseController
         var entity = await _repository.GetAsync(id)
             ?? throw new KeyNotFoundException($"The {typeof(TModel).Name} with the ID {id} doesn't exist.");
 
-        entity = _mapper.Map(update, entity);
+        _mapper.Map(update, entity);
 
         await _repository.UpdateAsync(entity);
 

@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using AutoMapper.Internal;
+using Bogus.Bson;
 using InventariumAPI.Data;
 using InventariumAPI.Interfaces;
 using Microsoft.AspNetCore.Hosting.Builder;
 using System.Diagnostics;
+using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -21,6 +23,8 @@ public class MapperProfile: Profile
         MapDtoTypes<DTOs.Location.LocationDTO>();
         MapDtoTypes<DTOs.User.UserDTO>();
         MapDtoTypes<DTOs.Lendout.LendoutDTO>();
+        CreateMap<DTOs.Object.BrokenObjectDTO, Models.BrokenObject>()
+            .ReverseMap();
    
     }
 
@@ -34,14 +38,25 @@ public class MapperProfile: Profile
             .ReverseMap();
         CreateMap(T.UpdateDTO, T.BaseType)
             .ForAllMembers(m => {
-                m.UseDestinationValue();
-                m.DoNotAllowNull();
-
+                m.MapAtRuntime();
+           
                 m.Condition(
-                    (source, destination, sourceMember) => sourceMember is not null);
-                }
+                    (source, destination, sourceMember) => {
+                        
 
+                        Console.WriteLine(
+                            $"Mapping member of type {sourceMember?.GetType()} if {sourceMember != null} to {destination} with value {sourceMember}");
+                        return sourceMember != null 
+                        && (sourceMember is not int n || n != 0) 
+                        && source != null;
+                    });
+                }
+                
             );
 
     }
+
+
+
+
 }

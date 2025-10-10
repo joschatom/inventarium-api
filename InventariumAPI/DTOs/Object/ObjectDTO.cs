@@ -28,33 +28,5 @@ public class ObjectDTO : IBaseDTO<Models.ObjectEntry, int>, IDtoTypes
 
     [ValueConverter(typeof(EnumToStringConverter<ObjectState>))]
     public string State { get; set; }
-
-    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-    {
-
-        return [];
-        var dataContext = validationContext.GetService<DataContext>();
-        var self = (ObjectDTO)validationContext.ObjectInstance;
-
-        var locationErr = dataContext.Locations.Find(self.LocationId) is null
-            ? new ValidationResult(
-                $"Location with ID {self.LocationId} doesn't exist.", 
-                [nameof(LocationId)]
-            ) : null;
-            
-        var categoryErr = dataContext.Categories.Find(CategoryId) is null
-            ? new ValidationResult(
-                $"Category with ID {CategoryId} doesn't exist.",
-                [nameof(CategoryId)]
-            ) : null;
-
-        if (locationErr != null && categoryErr != null)
-            return [locationErr, categoryErr];
-        else if (locationErr != null)
-            return [locationErr];
-        else if (categoryErr != null)
-            return [categoryErr];
-        else return [];
-    }
 }
 

@@ -8,18 +8,12 @@ using System.Runtime.CompilerServices;
 
 namespace InventariumAPI.Repositories;
 
-public abstract class BaseRepository<TModel, TId> : IBaseRepository<TModel, TId>
+public abstract class BaseRepository<TModel, TId>(DataContext context) : IBaseRepository<TModel, TId>
     where TModel : class, IGenericModel<TId>
     where TId : notnull
 {
-    protected BaseRepository(DataContext context)
-    {
-        _context = context;
-        _dbSet = context.Set<TModel>();
-    }
-
-    private readonly DbSet<TModel> _dbSet;
-    private readonly DataContext _context;
+    private readonly DbSet<TModel> _dbSet = context.Set<TModel>();
+    private readonly DataContext _context = context;
 
 
     public async Task<TModel> CreateAsync(TModel model)
@@ -39,7 +33,7 @@ public abstract class BaseRepository<TModel, TId> : IBaseRepository<TModel, TId>
     public virtual async Task<TModel?> GetAsync(TId id)
     {
         var entry = await _dbSet
-            .FindAsync(id);
+            .FindAsync(TModel.DeconstructId(id));
 
         return await _dbSet
             .Where(e => e == entry)

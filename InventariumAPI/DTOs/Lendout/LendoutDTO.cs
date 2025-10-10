@@ -31,6 +31,6 @@ public class LendoutDTO : IBaseDTO<Models.Lendout, (TModelId, TModelId)>, IDtoTy
 static class DateTimeExt
 {
     public static DateTime AlignToMinutes(this DateTime date)
-        => date.Date + TimeSpan.FromSeconds(Math.Floor(date.TimeOfDay.TotalMinutes));
+        => date.Date + TimeSpan.FromMinutes(Math.Floor(date.TimeOfDay.TotalMinutes));
 }
 

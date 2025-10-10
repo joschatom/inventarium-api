@@ -3,8 +3,10 @@ using Bogus;
 using InventariumAPI.Data;
 using InventariumAPI.DTOs.Object;
 using InventariumAPI.Interfaces;
+using InventariumAPI.Migrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Logging.Abstractions;
 using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -16,7 +18,8 @@ public enum ObjectState
 {
     Lendout,
     Free,
-    Broken
+    Broken,
+    BrokenLendout,
 }
 
 public class ObjectEntry: IGenericModel<TModelId>, IFakerFactory<ObjectEntry>
@@ -47,11 +50,12 @@ public class ObjectEntry: IGenericModel<TModelId>, IFakerFactory<ObjectEntry>
     public Lendout? Lendout { get; set; }
     public BrokenObject? BrokenObject { get; set; }
 
-    public ObjectState State =>
-        Lendout is not null ? ObjectState.Lendout
-        : BrokenObject is not null
-            ? ObjectState.Broken
-            : ObjectState.Free;
+    public ObjectState State => (Lendout != null, BrokenObject != null) switch{
+        (false, false) => ObjectState.Free,
+        (false, true) => ObjectState.Broken,
+        (true, false) => ObjectState.Lendout,
+        (_, _) => ObjectState.BrokenLendout
+    };
 
     public static Faker<ObjectEntry> CreateFaker(DataContext context)
         => new Faker<ObjectEntry>()

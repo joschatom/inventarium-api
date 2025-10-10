@@ -18,8 +18,6 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-
-
         modelBuilder.Entity<Lendout>()
             .HasKey(k => new { k.ObjectId, k.UserId });
            
@@ -38,7 +36,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
 
         modelBuilder.Entity<BrokenObject>()
             .HasOne(k => k.Object)
-            .WithOne();
+            .WithOne(o => o.BrokenObject);
 
         var eager = modelBuilder.Model.GetEntityTypes()
             .SelectMany(e => e.GetDeclaredNavigations()
