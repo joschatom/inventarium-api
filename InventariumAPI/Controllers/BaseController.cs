@@ -23,7 +23,7 @@ public abstract class BaseController
 
         var entries = await _repository.GetAllAsync();
 
-        return entries.ToDictionary(
+        return entries.Take(1).ToDictionary(
             x => x.GetId(),
             x => _mapper.Map<TDto>(x)
         );
